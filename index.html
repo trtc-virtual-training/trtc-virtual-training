@@ -170,7 +170,8 @@
   }
   .pay-item{ text-align:center; }
   .pay-item .n{ font-family:'Space Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin-bottom:6px; }
-  .pay-item .h{ font-family:'Space Mono',monospace; font-weight:700; color:var(--beam); font-size:13px; word-break:break-word; }
+  .pay-item .h{ font-family:'Space Mono',monospace; font-weight:700; color:var(--beam); font-size:13px; white-space:nowrap; }
+  .pay-item:nth-child(4) .h{ font-size:11px; }
 
   /* HOW PAYMENT/ONBOARD WORKS */
   .onboard-note{
@@ -233,6 +234,8 @@
     .hero h1{ font-size:38px; }
     .steps, .tier-grid, .onetime-grid, .gallery{ grid-template-columns: 1fr; }
     .payment-note{ grid-template-columns: 1fr 1fr; }
+    .pay-item:nth-child(4){ grid-column: 1 / -1; }
+    .pay-item:nth-child(4) .h{ font-size:12px; }
     nav .links{ display:none; }
   }
 </style>
