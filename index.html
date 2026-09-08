@@ -228,6 +228,7 @@
     grid-column: 1 / -1; text-align:center; padding:30px 20px; color:var(--muted);
     font-family:'Space Mono',monospace; font-size:12.5px; border:1px dashed var(--line); border-radius:14px;
   }
+  .video-frame.x-frame{ position:static; padding-top:0; height:auto; min-height:200px; display:flex; align-items:center; justify-content:center; padding:10px; }
   @media (max-width: 900px){ .video-grid{ grid-template-columns: 1fr 1fr; } }
   @media (max-width: 600px){ .video-grid{ grid-template-columns: 1fr; } }
 
@@ -546,9 +547,11 @@ var VIDEO_LINKS = [
   { url: "https://www.youtube.com/shorts/1529qMd6pkk", caption: "Processing Speed" },
   { url: "https://www.youtube.com/watch?v=0jR_IbQz8GM", caption: "SGP to SFA" },
   { url: "https://www.youtube.com/watch?v=tGHI-RKMNaQ", caption: "Speed for skilled RBs" },
+  { url: "https://x.com/ducknationn_/status/1924561382990639294/video/1", caption: "TD2 Freshman in college. Pure power and speed." },
   // { url: "https://www.youtube.com/watch?v=XXXXXXXXXXX", caption: "Sample drill breakdown" },
   // { url: "https://youtu.be/XXXXXXXXXXX", caption: "Another example" },
   // { url: "https://vimeo.com/XXXXXXXXX", caption: "Vimeo example" },
+  // { url: "https://x.com/USERNAME/status/XXXXXXXXXXX", caption: "X/Twitter example" },
 ];
 
 (function(){
@@ -558,28 +561,54 @@ var VIDEO_LINKS = [
   function toEmbedUrl(url){
     try{
       var yt = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|shorts\/|embed\/))([A-Za-z0-9_-]{6,})/);
-      if(yt) return 'https://www.youtube.com/embed/' + yt[1];
+      if(yt) return { type: 'iframe', src: 'https://www.youtube.com/embed/' + yt[1] };
       var vm = url.match(/vimeo\.com\/(\d+)/);
-      if(vm) return 'https://player.vimeo.com/video/' + vm[1];
+      if(vm) return { type: 'iframe', src: 'https://player.vimeo.com/video/' + vm[1] };
+      var xt = url.match(/(?:twitter\.com|x\.com)\/[^\/]+\/status\/(\d+)/);
+      if(xt) return { type: 'x', url: url.split('?')[0] };
     }catch(e){}
     return null;
   }
 
   if(!VIDEO_LINKS.length){
-    grid.innerHTML = '<div class="video-empty">No videos added yet — paste a YouTube or Vimeo link into VIDEO_LINKS near the bottom of this file.</div>';
+    grid.innerHTML = '<div class="video-empty">No videos added yet — paste a YouTube, Vimeo, or X link into VIDEO_LINKS near the bottom of this file.</div>';
     return;
   }
 
+  var needsTwitterWidget = false;
   var html = '';
   VIDEO_LINKS.forEach(function(v){
     var embed = toEmbedUrl(v.url);
     if(!embed) return;
-    html += '<div class="video-card">' +
-              '<div class="video-frame"><iframe src="' + embed + '" title="' + (v.caption || 'Training video') + '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>' +
+    if(embed.type === 'iframe'){
+      html += '<div class="video-card">' +
+                '<div class="video-frame"><iframe src="' + embed.src + '" title="' + (v.caption || 'Training video') + '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>' +
               (v.caption ? '<div class="cap">' + v.caption + '</div>' : '') +
             '</div>';
+    } else if(embed.type === 'x'){
+      needsTwitterWidget = true;
+      html += '<div class="video-card">' +
+                '<div class="video-frame x-frame">' +
+                  '<blockquote class="twitter-tweet" data-media-max-width="560">' +
+                    '<a href="' + embed.url + '"></a>' +
+                  '</blockquote>' +
+                '</div>' +
+              (v.caption ? '<div class="cap">' + v.caption + '</div>' : '') +
+            '</div>';
+    }
   });
   grid.innerHTML = html || '<div class="video-empty">No valid video links found — check the URLs in VIDEO_LINKS.</div>';
+
+  if(needsTwitterWidget){
+    var s = document.createElement('script');
+    s.src = 'https://platform.twitter.com/widgets.js';
+    s.async = true;
+    s.charset = 'utf-8';
+    s.onload = function(){
+      if(window.twttr && window.twttr.widgets) window.twttr.widgets.load(grid);
+    };
+    document.body.appendChild(s);
+  }
 })();
 </script>
 </body>
