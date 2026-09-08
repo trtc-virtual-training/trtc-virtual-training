@@ -215,22 +215,25 @@
     .carousel-btn{ width:34px; height:34px; font-size:18px; }
   }
 
-  /* VIDEO LIBRARY */
-  .video-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap:18px; }
-  .video-card{ border:1px solid var(--line); border-radius:14px; overflow:hidden; background:var(--panel); }
+  /* VIDEO LIBRARY CAROUSEL */
+  .video-carousel{ position:relative; }
+  .video-carousel-track{ position:relative; min-height:220px; }
+  .video-carousel-slide{ display:none; }
+  .video-carousel-slide.active{ display:block; }
+  .video-card{ border:1px solid var(--line); border-radius:14px; overflow:hidden; background:var(--panel); max-width:640px; margin:0 auto; }
   .video-frame{ position:relative; width:100%; padding-top:56.25%; background:#05070a; }
   .video-frame iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
   .video-card .cap{
     padding:10px 12px; font-family:'Space Mono',monospace; font-size:11px; letter-spacing:.04em;
-    text-transform:uppercase; color:var(--muted);
+    text-transform:uppercase; color:var(--muted); text-align:center;
   }
   .video-empty{
-    grid-column: 1 / -1; text-align:center; padding:30px 20px; color:var(--muted);
+    text-align:center; padding:30px 20px; color:var(--muted);
     font-family:'Space Mono',monospace; font-size:12.5px; border:1px dashed var(--line); border-radius:14px;
   }
   .video-frame.x-frame{ position:static; padding-top:0; height:auto; min-height:200px; display:flex; align-items:center; justify-content:center; padding:10px; }
-  @media (max-width: 900px){ .video-grid{ grid-template-columns: 1fr 1fr; } }
-  @media (max-width: 600px){ .video-grid{ grid-template-columns: 1fr; } }
+  .video-carousel .carousel-btn{ top:100px; }
+  @media (max-width: 760px){ .video-carousel .carousel-btn{ top:80px; } }
 
 
   /* FOOTER / FINAL CTA */
@@ -463,7 +466,12 @@
       <h2 class="disp">Video Library</h2>
       <p>Session breakdowns, drill demos, and athlete highlights.</p>
     </div>
-    <div class="video-grid" id="videoGrid"><!-- filled by script below --></div>
+    <div class="video-carousel" id="videoCarousel">
+      <div class="video-carousel-track" id="videoTrack"><!-- filled by script below --></div>
+      <button class="carousel-btn prev" onclick="moveVideoCarousel(-1)" aria-label="Previous video">&#8249;</button>
+      <button class="carousel-btn next" onclick="moveVideoCarousel(1)" aria-label="Next video">&#8250;</button>
+      <div class="carousel-dots" id="videoDots"></div>
+    </div>
   </div>
 </section>
 
@@ -555,8 +563,9 @@ var VIDEO_LINKS = [
 ];
 
 (function(){
-  var grid = document.getElementById('videoGrid');
-  if(!grid) return;
+  var track = document.getElementById('videoTrack');
+  var dotsWrap = document.getElementById('videoDots');
+  if(!track) return;
 
   function toEmbedUrl(url){
     try{
@@ -571,23 +580,28 @@ var VIDEO_LINKS = [
   }
 
   if(!VIDEO_LINKS.length){
-    grid.innerHTML = '<div class="video-empty">No videos added yet — paste a YouTube, Vimeo, or X link into VIDEO_LINKS near the bottom of this file.</div>';
+    track.innerHTML = '<div class="video-empty">No videos added yet — paste a YouTube, Vimeo, or X link into VIDEO_LINKS near the bottom of this file.</div>';
     return;
   }
 
   var needsTwitterWidget = false;
-  var html = '';
+  var slidesHtml = '';
+  var dotsHtml = '';
+  var slideCount = 0;
+
   VIDEO_LINKS.forEach(function(v){
     var embed = toEmbedUrl(v.url);
     if(!embed) return;
+    var activeClass = slideCount === 0 ? ' active' : '';
+    var inner = '';
     if(embed.type === 'iframe'){
-      html += '<div class="video-card">' +
+      inner = '<div class="video-card">' +
                 '<div class="video-frame"><iframe src="' + embed.src + '" title="' + (v.caption || 'Training video') + '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>' +
               (v.caption ? '<div class="cap">' + v.caption + '</div>' : '') +
             '</div>';
     } else if(embed.type === 'x'){
       needsTwitterWidget = true;
-      html += '<div class="video-card">' +
+      inner = '<div class="video-card">' +
                 '<div class="video-frame x-frame">' +
                   '<blockquote class="twitter-tweet" data-media-max-width="560">' +
                     '<a href="' + embed.url + '"></a>' +
@@ -595,9 +609,16 @@ var VIDEO_LINKS = [
                 '</div>' +
               (v.caption ? '<div class="cap">' + v.caption + '</div>' : '') +
             '</div>';
+    } else {
+      return;
     }
+    slidesHtml += '<div class="video-carousel-slide' + activeClass + '">' + inner + '</div>';
+    dotsHtml += '<span class="dot' + (slideCount === 0 ? ' active' : '') + '" onclick="goToVideoSlide(' + slideCount + ')" aria-label="Go to video ' + (slideCount + 1) + '"></span>';
+    slideCount++;
   });
-  grid.innerHTML = html || '<div class="video-empty">No valid video links found — check the URLs in VIDEO_LINKS.</div>';
+
+  track.innerHTML = slidesHtml || '<div class="video-empty">No valid video links found — check the URLs in VIDEO_LINKS.</div>';
+  if(dotsWrap) dotsWrap.innerHTML = dotsHtml;
 
   if(needsTwitterWidget){
     var s = document.createElement('script');
@@ -605,10 +626,33 @@ var VIDEO_LINKS = [
     s.async = true;
     s.charset = 'utf-8';
     s.onload = function(){
-      if(window.twttr && window.twttr.widgets) window.twttr.widgets.load(grid);
+      if(window.twttr && window.twttr.widgets) window.twttr.widgets.load(track);
     };
     document.body.appendChild(s);
   }
+
+  if(!slideCount) return;
+
+  var vIdx = 0;
+  var slides = track.querySelectorAll('.video-carousel-slide');
+  var dots = dotsWrap ? dotsWrap.querySelectorAll('.dot') : [];
+
+  function stopIframe(slide){
+    var f = slide.querySelector('iframe');
+    if(f) f.src = f.src; // reload to halt playback when navigating away
+  }
+
+  function showVideo(i){
+    stopIframe(slides[vIdx]);
+    slides[vIdx].classList.remove('active');
+    if(dots[vIdx]) dots[vIdx].classList.remove('active');
+    vIdx = (i + slides.length) % slides.length;
+    slides[vIdx].classList.add('active');
+    if(dots[vIdx]) dots[vIdx].classList.add('active');
+  }
+
+  window.moveVideoCarousel = function(dir){ showVideo(vIdx + dir); };
+  window.goToVideoSlide = function(i){ showVideo(i); };
 })();
 </script>
 </body>
