@@ -265,24 +265,28 @@
   }
 
   /* VIDEO LIBRARY CAROUSEL */
-  .video-carousel{ position:relative; }
+  .video-carousel{ position:relative; padding-bottom:46px; }
   .video-carousel-track{ position:relative; min-height:220px; }
   .video-carousel-slide{ display:none; }
   .video-carousel-slide.active{ display:block; }
-  .video-card{ border:1px solid var(--line); border-radius:14px; overflow:hidden; background:var(--panel); max-width:640px; margin:0 auto; }
+  .video-card{ position:relative; border:1px solid var(--line); border-radius:14px; overflow:hidden; background:var(--panel); max-width:640px; margin:0 auto; }
   .video-frame{ position:relative; width:100%; padding-top:56.25%; background:#05070a; }
   .video-frame iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
   .video-card .cap{
-    padding:10px 12px; font-family:'Space Mono',monospace; font-size:11px; letter-spacing:.04em;
-    text-transform:uppercase; color:var(--muted); text-align:center;
+    position:absolute; left:0; right:0; bottom:0; z-index:4; pointer-events:none;
+    padding:26px 14px 10px; background: linear-gradient(0deg, rgba(0,0,0,0.85), transparent);
+    font-family:'Space Mono',monospace; font-size:11px; letter-spacing:.04em;
+    text-transform:uppercase; color:var(--off-white); text-align:center;
   }
   .video-empty{
     text-align:center; padding:30px 20px; color:var(--muted);
     font-family:'Space Mono',monospace; font-size:12.5px; border:1px dashed var(--line); border-radius:14px;
   }
   .video-frame.x-frame{ position:static; padding-top:0; height:auto; min-height:200px; display:flex; align-items:center; justify-content:center; padding:10px; }
-  .video-carousel .carousel-btn{ top:100px; }
-  @media (max-width: 760px){ .video-carousel .carousel-btn{ top:80px; } }
+  .video-frame.x-frame ~ .cap{ position:static; background:none; padding:10px 12px; color:var(--muted); }
+  .video-carousel .carousel-btn{ top:calc(50% - 23px); }
+  .video-carousel .carousel-dots{ bottom:6px; }
+  @media (max-width: 760px){ .video-carousel .carousel-btn{ top:calc(50% - 23px); } }
 
 
   /* FOOTER / FINAL CTA */
