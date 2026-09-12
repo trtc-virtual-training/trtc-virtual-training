@@ -30,6 +30,7 @@
     --line: rgba(245,245,240,0.10);
     --off-white:#F5F5F0;
     --beam:#C6FF3D;
+    --accent2:#FF7A29;
     --beam-dim: rgba(198,255,61,0.16);
     --gold:#FFC93C;
     --red:#FF4433;
@@ -58,9 +59,9 @@
   nav .wrap{ display:flex; align-items:center; justify-content:space-between; padding-top:16px; padding-bottom:16px; }
   .logo{ font-family:'Anton',sans-serif; font-size:22px; letter-spacing:1px; }
   .logo-img{ height:46px; width:46px; object-fit:cover; border-radius:50%; display:block; }
-  .logo span{ color: var(--beam); }
+  .logo span{ color: var(--accent2); }
   nav .links{ display:flex; gap:26px; font-size:14px; font-family:'Space Mono',monospace; }
-  nav .links a:hover{ color: var(--beam); }
+  nav .links a:hover{ color: var(--accent2); }
   nav .cta-btn{
     background: var(--beam); color:#0B0F14; font-weight:700;
     padding:9px 18px; border-radius:999px; font-size:13.5px;
@@ -104,7 +105,8 @@
     font-family:'Space Mono',monospace; font-size:14px; letter-spacing:.02em;
   }
   .btn-primary{ background: var(--beam); color:#0B0F14; }
-  .btn-ghost{ border:1px solid var(--line); color: var(--off-white); }
+  .btn-ghost{ border:1px solid var(--line); color: var(--off-white); transition: border-color .2s, color .2s; }
+  .btn-ghost:hover{ border-color: var(--accent2); color: var(--accent2); }
 
   /* CRED STRIP */
   .cred-strip{
@@ -114,13 +116,13 @@
     padding: 22px 0;
   }
   .cred-strip .wrap{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:16px; font-family:'Space Mono',monospace; font-size:12.5px; color:var(--muted); text-align:center; }
-  .cred-strip strong{ color:var(--off-white); display:block; font-size:20px; font-family:'Anton',sans-serif; margin-bottom:2px; }
+  .cred-strip strong{ color:var(--accent2); display:block; font-size:20px; font-family:'Anton',sans-serif; margin-bottom:2px; }
 
   /* SECTIONS */
   section{ padding: 70px 0; }
   .section-head{ text-align:center; max-width:620px; margin: 0 auto 44px; }
   .section-head .kicker{
-    font-family:'Space Mono',monospace; font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--beam); margin-bottom:10px;
+    font-family:'Space Mono',monospace; font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent2); margin-bottom:10px;
   }
   .section-head h2{ font-size:38px; margin:0 0 12px; }
   .section-head p{ color:var(--muted); font-size:15px; line-height:1.6; }
@@ -146,11 +148,11 @@
     display:flex; flex-direction:column; position:relative;
   }
   .tier-card.featured{
-    background: linear-gradient(180deg, rgba(198,255,61,0.10), var(--panel) 55%);
-    border-color: rgba(198,255,61,0.5);
+    background: linear-gradient(180deg, rgba(255,122,41,0.10), var(--panel) 55%);
+    border-color: rgba(255,122,41,0.5);
   }
   .tier-card .tag{
-    position:absolute; top:-13px; left:22px; background:var(--beam); color:#0B0F14;
+    position:absolute; top:-13px; left:22px; background:var(--accent2); color:#0B0F14;
     font-family:'Space Mono',monospace; font-weight:700; font-size:10.5px; letter-spacing:.08em; text-transform:uppercase;
     padding:5px 12px; border-radius:999px;
   }
@@ -203,7 +205,7 @@
   .store-img img{ width:100%; height:100%; object-fit:cover; display:block; }
   .store-info{ padding:16px 18px 20px; text-align:center; }
   .store-name{ font-family:'Space Mono',monospace; font-weight:700; font-size:14px; color:var(--off-white); margin-bottom:4px; }
-  .store-price{ font-family:'Space Mono',monospace; font-weight:700; font-size:15px; color:var(--beam); margin-bottom:14px; }
+  .store-price{ font-family:'Space Mono',monospace; font-weight:700; font-size:15px; color:var(--accent2); margin-bottom:14px; }
   @media (max-width: 760px){ .store-grid{ grid-template-columns: 1fr; } }
 
   .donate-card{
@@ -243,8 +245,9 @@
   .carousel-slide.active{ opacity:1; pointer-events:auto; }
   .carousel-slide img{ width:100%; height:100%; object-fit:contain; background:#05070a; display:block; }
   .carousel-slide figcaption{
-    position:absolute; left:0; right:0; bottom:0; padding:12px 16px;
-    background: linear-gradient(0deg, rgba(0,0,0,0.85), transparent);
+    position:absolute; left:0; right:0; bottom:0; padding:22px 16px 12px;
+    background: linear-gradient(0deg, rgba(0,0,0,0.92) 40%, rgba(0,0,0,0.75) 75%, transparent);
+    color: var(--off-white); text-shadow: 0 1px 4px rgba(0,0,0,0.9), 0 0 2px rgba(0,0,0,0.9);
     font-family:'Space Mono',monospace; font-size:11px; letter-spacing:.05em; text-transform:uppercase;
   }
   .carousel-btn{
@@ -256,7 +259,7 @@
   .carousel-btn:hover{ background: var(--beam); color:#0B0F14; }
   .carousel-btn.prev{ left:14px; }
   .carousel-btn.next{ right:14px; }
-  .carousel-dots{ position:absolute; bottom:14px; left:50%; transform:translateX(-50%); display:flex; gap:8px; z-index:5; }
+  .carousel-dots{ position:absolute; bottom:68px; left:50%; transform:translateX(-50%); display:flex; gap:8px; z-index:5; }
   .dot{ width:8px; height:8px; border-radius:50%; background:rgba(245,245,240,0.3); cursor:pointer; transition:background .2s; border:none; padding:0; }
   .dot.active{ background: var(--beam); }
   @media (max-width: 760px){
@@ -274,7 +277,8 @@
   .video-frame iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
   .video-card .cap{
     position:absolute; left:0; right:0; bottom:0; z-index:4; pointer-events:none;
-    padding:26px 14px 10px; background: linear-gradient(0deg, rgba(0,0,0,0.85), transparent);
+    padding:34px 14px 10px; background: linear-gradient(0deg, rgba(0,0,0,0.92) 45%, rgba(0,0,0,0.75) 75%, transparent);
+    text-shadow: 0 1px 4px rgba(0,0,0,0.9), 0 0 2px rgba(0,0,0,0.9);
     font-family:'Space Mono',monospace; font-size:11px; letter-spacing:.04em;
     text-transform:uppercase; color:var(--off-white); text-align:center;
   }
@@ -600,7 +604,7 @@
 
 <footer>
   <div class="wrap">
-    <div class="item"><div class="k">Call / Text</div><div class="v">214-306-0390</div></div>
+    <div class="item"><div class="k">Call / Text</div><div class="v">817-881-8350</div></div>
     <div class="item"><div class="k">Email</div><div class="v">Tavaresduckett.mba@gmail.com</div></div>
     <div class="item"><div class="k">Facebook</div><div class="v">facebook.com/txrollas</div></div>
     <div class="item"><div class="k">Coverage</div><div class="v">Virtual · Anywhere</div></div>
