@@ -829,6 +829,7 @@ var VIDEO_LINKS = [
   { url: "https://www.youtube.com/watch?v=tGHI-RKMNaQ", caption: "Speed for skilled RBs" },
   { url: "https://www.facebook.com/100057595421753/videos/pcb.1431401348789699/1726877422061495", caption: "Bailey Johnson — 2026 Big 12 Outdoor Track and Field Championship — Photo: Big 12 Conference" },
   { url: "https://x.com/ducknationn_/status/1924561382990639294/video/1", caption: "TD2 Freshman in college. Pure power and speed." },
+  { url: "https://www.instagram.com/p/DcFEeqajkpy/", caption: "Top 2-way in the country. — Credit: DoubtedAthletes" },
   // { url: "https://www.youtube.com/watch?v=XXXXXXXXXXX", caption: "Sample drill breakdown" },
   // { url: "https://youtu.be/XXXXXXXXXXX", caption: "Another example" },
   // { url: "https://vimeo.com/XXXXXXXXX", caption: "Vimeo example" },
@@ -851,6 +852,8 @@ var VIDEO_LINKS = [
       if(ms) return { type: 'iframe', src: url };
       var fb = url.match(/facebook\.com\/[^\s]+\/videos\/[^\s]+/);
       if(fb) return { type: 'iframe', src: 'https://www.facebook.com/plugins/video.php?href=' + encodeURIComponent(url.split('?')[0]) + '&show_text=false' };
+      var ig = url.match(/instagram\.com\/(?:p|reel|tv)\/[A-Za-z0-9_-]+/);
+      if(ig) return { type: 'ig', url: url.split('?')[0] };
     }catch(e){}
     return null;
   }
@@ -861,6 +864,7 @@ var VIDEO_LINKS = [
   }
 
   var needsTwitterWidget = false;
+  var needsInstagramWidget = false;
   var html = '';
   VIDEO_LINKS.forEach(function(v){
     var embed = toEmbedUrl(v.url);
@@ -880,6 +884,14 @@ var VIDEO_LINKS = [
                 '</div>' +
               (v.caption ? '<div class="cap">' + v.caption + '</div>' : '') +
             '</div>';
+    } else if(embed.type === 'ig'){
+      needsInstagramWidget = true;
+      html += '<div class="video-card">' +
+                '<div class="video-frame x-frame">' +
+                  '<blockquote class="instagram-media" data-instgrm-permalink="' + embed.url + '" data-instgrm-version="14"></blockquote>' +
+                '</div>' +
+              (v.caption ? '<div class="cap">' + v.caption + '</div>' : '') +
+            '</div>';
     }
   });
   grid.innerHTML = html || '<div class="video-empty">No valid video links found — check the URLs in VIDEO_LINKS.</div>';
@@ -893,6 +905,16 @@ var VIDEO_LINKS = [
       if(window.twttr && window.twttr.widgets) window.twttr.widgets.load(grid);
     };
     document.body.appendChild(s);
+  }
+
+  if(needsInstagramWidget){
+    var ig = document.createElement('script');
+    ig.src = '//www.instagram.com/embed.js';
+    ig.async = true;
+    ig.onload = function(){
+      if(window.instgrm && window.instgrm.Embeds) window.instgrm.Embeds.process();
+    };
+    document.body.appendChild(ig);
   }
 })();
 </script>
